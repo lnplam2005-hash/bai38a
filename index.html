@@ -83,13 +83,13 @@
 
         /* Mục tiêu hình tròn */
         .target {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             background-color: #ff4757;
             border-radius: 50%;
             position: absolute;
             cursor: pointer;
-            box-shadow: 0 0 10px #ff4757;
+            box-shadow: 0 0 12px #ff4757;
             display: none;
         }
     </style>
@@ -98,7 +98,7 @@
 
     <h1>Game Kiểm Tra Tốc Độ Phản Xạ (Nâng cấp)</h1>
 
-    <!-- Bảng điều khiển & Các nút chức năng mới -->
+    <!-- Bảng điều khiển -->
     <div class="control-panel">
         <label for="custom-time">Thời gian chơi (giây):</label>
         <input type="number" id="custom-time" value="30" min="5" max="300">
@@ -119,8 +119,7 @@
     </div>
 
     <script>
-        // MÃ SỐ SINH VIÊN CỦA BẠN (Thay đổi ở đây nếu cần)
-        const STUDENT_ID = "231A010021"; // Điền Mã Số Sinh Viên của bạn
+        const STUDENT_ID = "231A010021"; // Mã số sinh viên của bạn
 
         const arena = document.getElementById('arena');
         const target = document.getElementById('target');
@@ -135,13 +134,13 @@
         let targetInterval = null;
         let isPlaying = false;
 
-        // 1. Chức năng đổi màu nền ngẫu nhiên (đổi màu arena và body)
+        // 1. Chức năng đổi màu nền ngẫu nhiên
         function changeBackgroundColor() {
             const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
             arena.style.backgroundColor = randomColor;
         }
 
-        // 2. Chức năng hiển thị Mã số sinh viên khi bấm nút Người chơi
+        // 2. Chức năng hiển thị Mã số sinh viên
         function showPlayerInfo() {
             alert(`Thông tin người chơi:\nMã số sinh viên: ${STUDENT_ID}`);
         }
@@ -159,17 +158,25 @@
             target.style.display = 'block';
         }
 
-        // Xử lý sự kiện click mục tiêu
-        target.addEventListener('click', () => {
+        // 3. Thay đổi cơ chế: CHỈ CẦN RÊ CHUỘT / CHẠM VÀO LÀ TÍNH ĐIỂM NGAY (Dùng 'mouseenter' thay cho 'click')
+        target.addEventListener('mouseenter', () => {
+            if (!isPlaying) return;
+            score++;
+            scoreDisplay.textContent = score;
+            moveTarget(); // Đổi vị trí ngay lập tức khi con trỏ chạm vào
+        });
+
+        // Hỗ trợ thêm cho thiết bị cảm ứng (chạm tay vào là nhận luôn)
+        target.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Ngăn sự kiện chuột ảo kích hoạt trùng lặp
             if (!isPlaying) return;
             score++;
             scoreDisplay.textContent = score;
             moveTarget();
         });
 
-        // 3. Chức năng bắt đầu trò chơi với thời gian đếm ngược tùy chọn
+        // Bắt đầu trò chơi
         function startGame() {
-            // Lấy thời gian tùy chọn từ ô input
             const inputVal = parseInt(customTimeInput.value);
             if (isNaN(inputVal) || inputVal <= 0) {
                 alert("Vui lòng nhập thời gian hợp lệ (lớn hơn 0 giây)!");
@@ -198,7 +205,7 @@
                 }
             }, 1000);
 
-            // Tự động đổi vị trí mỗi 1 giây
+            // Tự động đổi vị trí mỗi 1 giây nếu không chạm tới
             targetInterval = setInterval(() => {
                 if (isPlaying) {
                     moveTarget();
@@ -206,7 +213,7 @@
             }, 1000);
         }
 
-        // Kết thúc trò chơi & Khóa toàn bộ thao tác
+        // Kết thúc trò chơi
         function endGame() {
             isPlaying = false;
             clearInterval(gameInterval);
